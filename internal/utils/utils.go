@@ -250,9 +250,16 @@ func ParseUser(user string) (types.User, error) {
 	}
 
 	// Check for empty strings
-	for _, userPart := range userSplit {
+	for index, userPart := range userSplit {
 		if strings.TrimSpace(userPart) == "" {
 			return types.User{}, errors.New("invalid user format")
+		}
+
+		// Check length of bcrypt password hash and totp secret
+		if index == 1 && len(userPart) != 60 {
+			return types.User{}, errors.New("invalid password hash length, expected 60 characters")
+		} else if index == 2 && len(userPart) != 32 {
+			return types.User{}, errors.New("invalid totp length, expected 32 characters")
 		}
 	}
 
